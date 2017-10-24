@@ -1,6 +1,6 @@
 // const analyzeDir = require('./fileReadingUtils.js').analyzeDir;
-const fs = require('fs');
-
+// const fs = require('fs');
+const fs = require('fs-extra');
 const path = require('path');
 const { uniq, flatten } = require('ramda');
 // const acorn = require('acorn');
@@ -45,6 +45,7 @@ const config = {
   packageDependencies,
   extensions: ['/index.jsx', '/index.js', '.jsx', '.js'],
   localResolver,
+  destinationRoot: '/Users/remyy/Applications/js/wrench-migrator-test',
 }
 
 const addToImports = (config, imports, file, importStatement) => {
@@ -108,5 +109,27 @@ const getDependencies = async file => {
     }
   }
 
+/*
+ ___  _________        ___       __   ________  ________  ___  __    ________                        ___    ___ ________      ___    ___ ___
+|\  \|\___   ___\     |\  \     |\  \|\   __  \|\   __  \|\  \|\  \ |\   ____\                      |\  \  /  /|\   __  \    |\  \  /  /|\  \
+\ \  \|___ \  \_|     \ \  \    \ \  \ \  \|\  \ \  \|\  \ \  \/  /|\ \  \___|_                     \ \  \/  / | \  \|\  \   \ \  \/  / | \  \
+ \ \  \   \ \  \       \ \  \  __\ \  \ \  \\\  \ \   _  _\ \   ___  \ \_____  \         ___         \ \    / / \ \   __  \   \ \    / / \ \  \
+  \ \  \   \ \  \       \ \  \|\__\_\  \ \  \\\  \ \  \\  \\ \  \\ \  \|____|\  \       |\  \         \/  /  /   \ \  \ \  \   \/  /  /   \ \__\
+   \ \__\   \ \__\       \ \____________\ \_______\ \__\\ _\\ \__\\ \__\____\_\  \      \ \  \      __/  / /      \ \__\ \__\__/  / /      \|__|
+    \|__|    \|__|        \|____________|\|_______|\|__|\|__|\|__| \|__|\_________\     _\/  /|    |\___/ /        \|__|\|__|\___/ /           ___
+                                                                       \|_________|    |\___/ /    \|___|/                  \|___|/           |\__\
+                                                                                       \|___|/                                                \|__|
+*/
+
 getRootDependencies(config)
-  .then( allImports => allImports.sort().map(debug));
+  // .then( allImports => allImports.sort().map(debug));
+  .then( allImports => {
+    allImports.map( absolutePath => {
+      const relativePath = absolutePath.replace(config.rootDir, '');
+
+      fs.copySync(
+        absolutePath,
+        path.join(config.destinationRoot,relativePath)
+      );
+    })
+  });
