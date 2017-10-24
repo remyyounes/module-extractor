@@ -1,6 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 
+const debug = x => {
+  console.log(x);
+  return x;
+};
+
 const tryFile = file => {
   try {
     return fs.existsSync(file) && file;
@@ -46,12 +51,29 @@ const isLocalImport = filepath => {
   return filepath.includes('/');
 };
 
-const localResolver = config => importStatement => {
-  config
+const localResolver = (config, currentPath, src) => {
+  const tryPath = tryExtensions(config.extensions);
+  const currentDir = path.dirname(currentPath);
+  const localSources = !!config.packageDependencies[src]
+    ? []
+    : [
+      currentDir,
+      `${config.rootDir}/src/_shared`,
+    ]
+
+  const resolved = localSources.reduce((acc, localSource) => {
+    return !!acc
+    ? acc
+    : tryPath(
+      path.resolve( path.join(localSource, src) )
+    );
+  }, false);
+  return resolved;
 }
 
 
 module.exports = {
+  debug,
   getAbsolutePathFromfile,
   getDir: path.dirname,
   isLocalImport,
