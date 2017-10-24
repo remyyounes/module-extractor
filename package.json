@@ -1,0 +1,21 @@
+{
+  "name": "wrench-migrator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "acorn": "^5.1.2",
+    "acorn-jsx": "^4.0.1",
+    "acorn-object-rest-spread": "^1.1.0",
+    "dependency-tree": "^5.11.1",
+    "ramda": "^0.25.0"
+  },
+  "devDependencies": {
+    "madge": "^2.2.0"
+  }
+}
