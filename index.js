@@ -2,7 +2,7 @@
 // const fs = require('fs');
 const fs = require('fs-extra');
 const path = require('path');
-const { uniq, flatten } = require('ramda');
+const { uniq, filter, flatten, concat, map } = require('ramda');
 // const acorn = require('acorn');
 const acorn = require("acorn/dist/acorn_loose");
 // const injectAcornJsx = require('acorn-jsx/inject');
@@ -15,6 +15,7 @@ const acorn = require("acorn/dist/acorn_loose");
 const walk = require('acorn/dist/walk');
 const {
   debug,
+  exportToDestination,
   getAbsolutePathFromfile,
   getDir,
   isLocalImport,
@@ -25,6 +26,12 @@ const {
 } = require('./lib.js');
 
 
+// TODO: also copy the following
+// - *.css *.scss
+// - dot files
+// - packageJson
+// - change ../public reference
+
 // =======
 // Config
 // =======
@@ -33,6 +40,7 @@ const packageJson = '/Users/remyy/Applications/ruby/procore/wrench/package.json'
 const packageConfig = require(packageJson);
 const packageDependencies = packageConfig.dependencies;
 const entryPoint = 'src/tools/budgetViewer/mounts/ProjectLevel/View.js';
+const extensions = ['/index.jsx', '/index.js', '.jsx', '.js', '.scss', '.css'];
 // const entryPoint = 'src/_shared/decorators/sagaProvider/sagaProvider.jsx';
 
 
@@ -43,9 +51,9 @@ const config = {
   rootDir,
   entryPoint,
   packageDependencies,
-  extensions: ['/index.jsx', '/index.js', '.jsx', '.js'],
+  extensions,
   localResolver,
-  destinationRoot: '/Users/remyy/Applications/js/wrench-migrator-test',
+  destinationRoot: '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/',
 }
 
 const addToImports = (config, imports, file, importStatement) => {
@@ -92,9 +100,9 @@ const getEntry = config => `${config.rootDir}${config.entryPoint}`;
 const getRootDependencies = config => getDependencies(getEntry(config));
 
 const resolveImports = imports =>
-  Promise.all( imports.map(getDependencies) )
+  Promise.all(imports.map(getDependencies))
   .then(flatten)
-  .then(flattened => flattened.concat(imports) );
+  .then(concat(imports));
 
 
 const getDependencies = async file => {
@@ -109,27 +117,7 @@ const getDependencies = async file => {
     }
   }
 
-/*
- ___  _________        ___       __   ________  ________  ___  __    ________                        ___    ___ ________      ___    ___ ___
-|\  \|\___   ___\     |\  \     |\  \|\   __  \|\   __  \|\  \|\  \ |\   ____\                      |\  \  /  /|\   __  \    |\  \  /  /|\  \
-\ \  \|___ \  \_|     \ \  \    \ \  \ \  \|\  \ \  \|\  \ \  \/  /|\ \  \___|_                     \ \  \/  / | \  \|\  \   \ \  \/  / | \  \
- \ \  \   \ \  \       \ \  \  __\ \  \ \  \\\  \ \   _  _\ \   ___  \ \_____  \         ___         \ \    / / \ \   __  \   \ \    / / \ \  \
-  \ \  \   \ \  \       \ \  \|\__\_\  \ \  \\\  \ \  \\  \\ \  \\ \  \|____|\  \       |\  \         \/  /  /   \ \  \ \  \   \/  /  /   \ \__\
-   \ \__\   \ \__\       \ \____________\ \_______\ \__\\ _\\ \__\\ \__\____\_\  \      \ \  \      __/  / /      \ \__\ \__\__/  / /      \|__|
-    \|__|    \|__|        \|____________|\|_______|\|__|\|__|\|__| \|__|\_________\     _\/  /|    |\___/ /        \|__|\|__|\___/ /           ___
-                                                                       \|_________|    |\___/ /    \|___|/                  \|___|/           |\__\
-                                                                                       \|___|/                                                \|__|
-*/
-
 getRootDependencies(config)
-  // .then( allImports => allImports.sort().map(debug));
-  .then( allImports => {
-    allImports.map( absolutePath => {
-      const relativePath = absolutePath.replace(config.rootDir, '');
-
-      fs.copySync(
-        absolutePath,
-        path.join(config.destinationRoot,relativePath)
-      );
-    })
-  });
+.then(filter(x=>x.includes('css')))
+.then(map(debug))
+// .then(exportToDestination);

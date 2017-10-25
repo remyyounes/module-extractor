@@ -72,8 +72,22 @@ const localResolver = (config, currentPath, src) => {
 }
 
 
+const exportToDestination = (source, destination, files) => {
+  files.map( absolutePath => {
+    const relativePath = absolutePath.replace(source, '');
+
+    fs.copySync(
+      absolutePath,
+      path.join(destination, relativePath)
+    );
+  })
+};
+
+
+
 module.exports = {
   debug,
+  exportToDestination,
   getAbsolutePathFromfile,
   getDir: path.dirname,
   isLocalImport,
