@@ -1,5 +1,5 @@
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 const debug = x => {
   console.log(x);
@@ -19,7 +19,6 @@ const tryExtensions = extensions => path => {
     undefined
   );
 };
-
 
 const readFile = path => {
   return new Promise((resolve, reject) => {
@@ -72,7 +71,7 @@ const localResolver = (config, currentPath, src) => {
 }
 
 
-const exportToDestination = (source, destination, files) => {
+const exportToDestination = (source, destination) => files => {
   files.map( absolutePath => {
     const relativePath = absolutePath.replace(source, '');
 

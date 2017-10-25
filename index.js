@@ -2,7 +2,7 @@
 // const fs = require('fs');
 const fs = require('fs-extra');
 const path = require('path');
-const { uniq, filter, flatten, concat, map } = require('ramda');
+const { uniq, flatten, concat } = require('ramda');
 // const acorn = require('acorn');
 const acorn = require("acorn/dist/acorn_loose");
 // const injectAcornJsx = require('acorn-jsx/inject');
@@ -100,9 +100,9 @@ const getEntry = config => `${config.rootDir}${config.entryPoint}`;
 const getRootDependencies = config => getDependencies(getEntry(config));
 
 const resolveImports = imports =>
-  Promise.all(imports.map(getDependencies))
+  Promise.all( imports.map(getDependencies) )
   .then(flatten)
-  .then(concat(imports));
+  .then(flattened => flattened.concat(imports) );
 
 
 const getDependencies = async file => {
@@ -118,6 +118,4 @@ const getDependencies = async file => {
   }
 
 getRootDependencies(config)
-.then(filter(x=>x.includes('css')))
-.then(map(debug))
-// .then(exportToDestination);
+  .then(exportToDestination(config.rootDir, config.destinationRoot));
