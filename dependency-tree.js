@@ -1,6 +1,7 @@
 const acorn = require('acorn/dist/acorn_loose')
 const path = require('path')
 const walk = require('acorn/dist/walk')
+const { debug, readFile, tryExtensions } = require('./lib.js')
 const {
   map,
   uniq,
@@ -9,14 +10,28 @@ const {
   concat,
   pipeP,
 } = require('ramda')
-const { readFile, tryExtensions } = require('./lib.js')
 
 // UTILS
 const filterImports = filter(x => x)
-const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
 
+const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
+const traverseAndMerge = traverse => list => pipeP(
+  mapP(traverse),
+  concat(list),
+  flatten,
+  uniq
+)(list)
+
+// tmp hack
+const transpile = code => code.replace(
+  /export \w+ from/,
+  'import default from'
+)
 const parse = code =>
-  acorn.parse_dammit(code, { sourceType: 'module' })
+  acorn.parse_dammit(
+    transpile(code),
+    { sourceType: 'module' }
+  )
 
 const extractImports = code => {
   const imports = []
@@ -43,12 +58,12 @@ const resolveFile = (resolver, sources, dependency) =>
     false
   )
 
-const configureResolver = ({
-  extensions = ['.js'],
-  packages = [],
-  alternatePaths = [],
-}) => {
-  const resolver = module => dependency => {
+const configureResolver =
+  ({
+    extensions = ['.js'],
+    packages = [],
+    alternatePaths = [],
+  }) => module => dependency => {
     const sources = packages.includes(dependency)
       ? []
       : [path.dirname(module)].concat(alternatePaths)
@@ -58,27 +73,24 @@ const configureResolver = ({
       dependency
     )
   }
+
+module.exports = config => {
+  const resolver = configureResolver(config)
   const VISITED = {}
+
   const getDependencies = async file => {
     // skip or visit
     if (VISITED[file]) { return [] }
     VISITED[file] = true
-
     // Async Pipeline
     return pipeP(
       readFile,
       extractImports,
       map(resolver(file)),
       filterImports,
-      imports => mapP(getDependencies)(imports).then(concat(imports)),
-      flatten,
-      uniq
+      traverseAndMerge(getDependencies)
     )(file)
   }
 
   return getDependencies
-}
-
-module.exports = {
-  configureResolver,
 }

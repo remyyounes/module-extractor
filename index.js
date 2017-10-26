@@ -1,19 +1,9 @@
 const path = require('path')
 const { exportToDestination } = require('./migrator.js')
-const {
-  configureResolver,
-} = require('./dependency-tree.js')
+const dt = require('./dependency-tree.js')
+const { concat } = require('ramda')
+const { debug } = require('./lib.js')
 
-// TODO: also copy the following
-// - dot files
-// - packageJson
-// - change ../public reference
-
-// =======
-// Config
-// =======
-
-// TODO: packagejson
 const packageJson = '/Users/remyy/Applications/ruby/procore/wrench/package.json'
 const packageConfig = require(packageJson)
 const packages = Object.keys(packageConfig.dependencies)
@@ -24,22 +14,35 @@ const entryPoint = path.join(
   'src/tools/budgetViewer/mounts/ProjectLevel/View.js'
 )
 
-const getDependencies = configureResolver({
+const getDependencies = dt({
   packages,
   extensions: [
-    '/index.jsx', '/index.js', '.jsx', '.js', '.scss', '.css',
+    '/index.jsx',
+    '/index.js',
+    '.jsx',
+    '.js',
+    '.scss',
+    '.css',
+    '',
   ],
-  searchPaths: [
+  alternatePaths: [
     `${rootDir}/src/_shared`,
   ],
 })
 
+const extraFiles = [
+  entryPoint,
+  path.join(rootDir, 'src', 'assets'),
+]
+
 
 const dependencies = getDependencies(entryPoint)
 
-// log
-dependencies.then(x => console.log(x.length))
+dependencies
+  .then(x => x.map(debug))
+  .then(x => debug(x.length))
 
-// export
-// const destinationRoot = '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/'
-// dependencies.then(exportToDestination(config.rootDir, config.destinationRoot))
+const destinationRoot = '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/'
+dependencies
+  .then(concat(extraFiles))
+  .then(exportToDestination(rootDir, destinationRoot))
