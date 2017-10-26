@@ -27,7 +27,7 @@ if (migratorConfig.debug) {
   dependencies.then(
     exportToDestination(
       migratorConfig.rootDir,
-      migratorConfig.destinationRoot
+      migratorConfig.destinationDir
     )
   )
 }

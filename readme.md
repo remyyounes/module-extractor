@@ -3,8 +3,8 @@
 A tool that assists the migration of a `Wrench` tool to a `Hydra` client.
 
 ## How it works
-- `acorn.parse` to build an AST from a AST.
-- `acorn.walk` to gather all `ImportStatements`
+- `acorn.parse` to build an AST from a javascript file
+- `acorn.walk` to gather all `ImportStatements` and `require` statements
 - filter npm packages
 - resolve magic imports with `alternatePaths` (ie: `_shared`)
 - recurse down the tree and mark visited node
@@ -22,8 +22,6 @@ By default, it is set to your `package.json`'s dependencies entry.
 ```
 node index.js
 ```
-
-
 
 ## notes
 # How alternatePaths works
