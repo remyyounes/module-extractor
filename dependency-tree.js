@@ -24,7 +24,7 @@ const traverseAndMerge = traverse => list => pipeP(
 
 // tmp hack
 const transpile = code => code.replace(
-  /export \w+ from/,
+  /export (.)* from/,
   'import default from'
 )
 const parse = code =>

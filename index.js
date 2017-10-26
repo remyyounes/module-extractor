@@ -1,58 +1,33 @@
-const path = require('path')
 const { exportToDestination } = require('./migrator.js')
 const dt = require('./dependency-tree.js')
 const { concat, flatten } = require('ramda')
-const { debug, mapP } = require('./lib.js')
+const { debug } = require('./lib.js')
+const {
+  resolverConfig,
+  migratorConfig,
+} = require('./config.js')
 
-const packageJson = '/Users/remyy/Applications/ruby/procore/wrench/package.json'
-const packageConfig = require(packageJson)
-const packages = Object.keys(packageConfig.dependencies)
-const rootDir = '/Users/remyy/Applications/ruby/procore/wrench/'
+// configure what we do when we find a dependency.
+// resolve in this context means constructing the correct path so that we can copy it later
+const getDependencies = dt(resolverConfig)
 
-
-const config = {
-  packages,
-  extensions: [
-    '/index.jsx',
-    '/index.js',
-    '.jsx',
-    '.js',
-    '.scss',
-    '.css',
-    '',
-  ],
-  alternatePaths: [
-    `${rootDir}/src/_shared`,
-  ],
-}
-const getDependencies = dt(config)
-
-
-const entryPoint = path.join(
-  rootDir,
-  'src/tools/budgetViewer/mounts/ProjectLevel/View.js'
-)
-
-const entryPoints = [
-  path.join(rootDir, 'src/tools/budgetViewer/mounts/projectLevel/View.js'),
-  path.join(rootDir, 'src/tools/budgetViewer/mounts/projectLevel/DeleteSnapshot.js'),
-  path.join(rootDir, 'src/tools/budgetViewer/mounts/projectLevel/CreateSnapshot.js'),
-  path.join(rootDir, 'src/tools/budgetViewer/mounts/companyLevel/Edit.js'),
-  path.join(rootDir, 'src/tools/budgetViewer/mounts/companyLevel/Create.js'),
-]
-
-const dependencies = Promise.all(entryPoints.map(getDependencies))
+// crawl for dependencies
+const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies))
   .then(flatten)
+  .then(concat(migratorConfig.extraFiles))
+  .then(concat(migratorConfig.entryPoints))
 
-dependencies
-  .then(x => x.map(debug))
-  .then(x => debug(x.length))
-
-// const destinationRoot = '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/'
-// const extraFiles = [
-//   entryPoint,
-//   path.join(rootDir, 'src', 'assets'),
-// ]
-// dependencies
-//   .then(concat(extraFiles))
-//   .then(exportToDestination(rootDir, destinationRoot))
+if (migratorConfig.debug) {
+  // Log dependencies on Dry runs
+  dependencies
+    .then(x => x.map(debug))
+    .then(x => debug(x.length))
+} else {
+  // Migrate dependencies
+  dependencies.then(
+    exportToDestination(
+      migratorConfig.rootDir,
+      migratorConfig.destinationRoot
+    )
+  )
+}
