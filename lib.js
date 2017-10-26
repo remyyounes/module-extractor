@@ -46,52 +46,15 @@ const getAbsolutePathFromfile = file => relativePath => {
   return path.resolve(path.dirname(file) + '/' + relativePath);
 }
 
-const isLocalImport = filepath => {
-  return filepath.includes('/');
-};
-
-const localResolver = (config, currentPath, src) => {
-  const tryPath = tryExtensions(config.extensions);
-  const currentDir = path.dirname(currentPath);
-  const localSources = !!config.packageDependencies[src]
-    ? []
-    : [
-      currentDir,
-      `${config.rootDir}/src/_shared`,
-    ]
-
-  const resolved = localSources.reduce((acc, localSource) => {
-    return !!acc
-    ? acc
-    : tryPath(
-      path.resolve( path.join(localSource, src) )
-    );
-  }, false);
-  return resolved;
-}
-
-
-const exportToDestination = (source, destination) => files => {
-  files.map( absolutePath => {
-    const relativePath = absolutePath.replace(source, '');
-
-    fs.copySync(
-      absolutePath,
-      path.join(destination, relativePath)
-    );
-  })
-};
-
+const isLocalImport = filepath => filepath.includes('/');
 
 
 module.exports = {
   debug,
-  exportToDestination,
   getAbsolutePathFromfile,
   getDir: path.dirname,
   isLocalImport,
   readFile,
-  localResolver,
   tryExtensions,
   tryFile,
 };

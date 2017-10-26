@@ -18,6 +18,10 @@
     "ramda": "^0.25.0"
   },
   "devDependencies": {
-    "madge": "^2.2.0"
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "madge": "^2.2.0",
+    "prettier": "^1.7.4"
   }
 }
