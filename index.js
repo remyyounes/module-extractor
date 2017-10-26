@@ -1,10 +1,7 @@
-// const analyzeDir = require('./fileReadingUtils.js').analyzeDir
-// const fs = require('fs')
 const path = require('path')
 const { exportToDestination } = require('./migrator.js')
 const {
   configureResolver,
-  getDependencies,
 } = require('./dependency-tree.js')
 
 // TODO: also copy the following
@@ -27,7 +24,7 @@ const entryPoint = path.join(
   'src/tools/budgetViewer/mounts/ProjectLevel/View.js'
 )
 
-const resolver = configureResolver({
+const getDependencies = configureResolver({
   packages,
   extensions: [
     '/index.jsx', '/index.js', '.jsx', '.js', '.scss', '.css',
@@ -38,11 +35,11 @@ const resolver = configureResolver({
 })
 
 
-const dependencies = getDependencies(resolver)(entryPoint)
+const dependencies = getDependencies(entryPoint)
 
 // log
 dependencies.then(x => console.log(x.length))
 
 // export
-const destinationRoot = '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/'
-  // dependencies.then(exportToDestination(config.rootDir, config.destinationRoot))
+// const destinationRoot = '/Users/remyy/Applications/ruby/procore/hydra_clients/budget/'
+// dependencies.then(exportToDestination(config.rootDir, config.destinationRoot))

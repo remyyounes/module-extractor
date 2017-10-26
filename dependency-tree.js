@@ -1,59 +1,40 @@
 const acorn = require('acorn/dist/acorn_loose')
 const path = require('path')
 const walk = require('acorn/dist/walk')
-const { uniq, flatten } = require('ramda')
+const {
+  map,
+  uniq,
+  filter,
+  flatten,
+  concat,
+  pipeP,
+} = require('ramda')
 const { readFile, tryExtensions } = require('./lib.js')
 
-const addToImports = (resolver, imports, file, importStatement) => {
-  const resolved = resolver(file, importStatement)
-  if (resolved) {
-    imports.push(resolved)
-  }
-  return imports
-}
+// UTILS
+const filterImports = filter(x => x)
+const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
 
-const extractImports = (resolver, file) => code => new Promise(resolve => {
-  let imports = []
-  try {
-    const ast = acorn.parse_dammit(
-      code,
-      {
-        sourceType: 'module',
-      }
-    )
+const parse = code =>
+  acorn.parse_dammit(code, { sourceType: 'module' })
 
-    walk.simple(ast, {
+const extractImports = code => {
+  const imports = []
+  walk.simple(
+    parse(code),
+    {
       ImportDeclaration(n) {
-        imports = addToImports(resolver, imports, file, n.source.value)
+        imports.push(n.source.value)
       },
       CallExpression(n) {
         if (n.callee.name === 'require') {
-          imports = addToImports(resolver, imports, file, n.arguments[0].value)
+          imports.push(n.arguments[0].value)
         }
       },
-    })
-  } catch (e) {
-    // console.log("TODO:", 'deal with errors', e)
-  }
-  resolve(imports)
-})
-
-const PROCESSED_REMOVE_ME = {}
-
-const getDependencies = resolver => async file => {
-  if (PROCESSED_REMOVE_ME[file]) {
-    return []
-  }
-  PROCESSED_REMOVE_ME[file] = true
-  return readFile(file)
-    .then(extractImports(resolver, file))
-    .then(getSubDependencies(resolver))
+    }
+  )
+  return imports
 }
-const getSubDependencies = resolver => imports =>
-  Promise.all(imports.map(getDependencies(resolver)))
-    .then(flatten)
-    .then(flattened => flattened.concat(imports))
-    .then(uniq)
 
 const resolveFile = (resolver, sources, dependency) =>
   sources.reduce(
@@ -67,17 +48,37 @@ const configureResolver = ({
   packages = [],
   alternatePaths = [],
 }) => {
-  const resolver = tryExtensions(extensions)
-
-  return (module, dependency) => {
+  const resolver = module => dependency => {
     const sources = packages.includes(dependency)
       ? []
       : [path.dirname(module)].concat(alternatePaths)
-    return resolveFile(resolver, sources, dependency)
+    return resolveFile(
+      tryExtensions(extensions),
+      sources,
+      dependency
+    )
   }
+  const VISITED = {}
+  const getDependencies = async file => {
+    // skip or visit
+    if (VISITED[file]) { return [] }
+    VISITED[file] = true
+
+    // Async Pipeline
+    return pipeP(
+      readFile,
+      extractImports,
+      map(resolver(file)),
+      filterImports,
+      imports => mapP(getDependencies)(imports).then(concat(imports)),
+      flatten,
+      uniq
+    )(file)
+  }
+
+  return getDependencies
 }
 
 module.exports = {
   configureResolver,
-  getDependencies,
 }
