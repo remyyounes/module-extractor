@@ -11,6 +11,23 @@ const tool = 'budgetViewer'
 // We need to hard code the paths in extraFiles
 const extraFiles = [
   path.join(wrench, 'src', 'assets'),
+  // configs
+  path.join(wrench, 'package.json'),
+  path.join(wrench, 'scripts'),
+  path.join(wrench, 'yarn.lock'),
+  // dotfiles
+  path.join(wrench, '.babelrc'),
+  path.join(wrench, '.env_stub'),
+  path.join(wrench, '.eslintignore'),
+  path.join(wrench, '.eslintrc'),
+  path.join(wrench, '.flowconfig'),
+  path.join(wrench, '.github/'),
+  path.join(wrench, '.gitignore'),
+  path.join(wrench, '.hound.yml'),
+  path.join(wrench, '.mocha.opts'),
+  path.join(wrench, '.npmignore'),
+  path.join(wrench, '.npmrc'),
+  path.join(wrench, '.nvmrc'),
 ]
 
 // Mount points you want to migrate to hydra
