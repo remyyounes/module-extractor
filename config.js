@@ -1,40 +1,51 @@
 const path = require('path')
+const { fromPath, extractNpmDependencies } = require('./lib.js')
 
 // MIGRATION CONFIGURATION
-
-const wrench = '/Users/georgemichael/Code/Procore/wrench/'
-const hydra = '/Users/georgemichael/Code/Procore/procore/hydra_clients'
+const procore = '/Users/remyy/Applications/ruby/procore/'
 const tool = 'budgetViewer'
 
+// ASSUMING PROCORE STRUCTURE
+const wrench = path.join(procore, 'wrench')
+const hydra = path.join(procore, 'hydra')
+const packages = extractNpmDependencies(path.join(wrench, 'package.json'))
+
+// extraFiles
+// ==========
 // we currently only parse JS files because that's what acorn supports
 // Because we can't extract imgage imports from those CSS files
 // We need to hard code the paths in extraFiles
-const extraFiles = [
-  path.join(wrench, 'src', 'assets'),
-  // configs
-  path.join(wrench, 'package.json'),
-  path.join(wrench, 'scripts'),
-  path.join(wrench, 'yarn.lock'),
-  // dotfiles
-  path.join(wrench, '.babelrc'),
-  path.join(wrench, '.env_stub'),
-  path.join(wrench, '.eslintignore'),
-  path.join(wrench, '.eslintrc'),
-  path.join(wrench, '.flowconfig'),
-  path.join(wrench, '.github/'),
-  path.join(wrench, '.gitignore'),
-  path.join(wrench, '.hound.yml'),
-  path.join(wrench, '.mocha.opts'),
-  path.join(wrench, '.npmignore'),
-  path.join(wrench, '.npmrc'),
-  path.join(wrench, '.nvmrc'),
-]
 
+const extraFiles = fromPath(
+  wrench,
+  [
+    'src/assets',
+    // configs
+    'package.json',
+    'scripts',
+    'yarn.lock',
+    // dotfiles
+    '.babelrc',
+    '.env_stub',
+    '.eslintignore',
+    '.eslintrc',
+    '.flowconfig',
+    '.github',
+    '.gitignore',
+    '.hound.yml',
+    '.mocha.opts',
+    '.npmignore',
+    '.npmrc',
+    '.nvmrc',
+  ]
+)
+// entryPoints
+// ==========
 // Mount points you want to migrate to hydra
 // The dependency crawling will start from these files
 const entryPoints = [
-  path.join(wrench, 'src/tools/budgetViewer/mounts/projectLevel/View.js'),
-]
+  'src/tools/budgetViewer/mounts/projectLevel/View.js',
+].map(file => path.join(wrench, file))
 
 const migratorConfig = {
   hydra,
@@ -46,17 +57,12 @@ const migratorConfig = {
 }
 
 // CUSTOM RESOLVER CONFIGURATION
-
+// =============================
 // The current resolver is not smart enough to resolve in these paths
 // Depending on your tool needs, specify extra paths
 const alternatePaths = [
-  `${wrench}/src/_shared`, // magic resolve in our webpack config
-]
-
-// TODO: move npm deps to lib file
-const packageJson = path.join(wrench, 'package.json');
-const packageConfig = require(packageJson)
-const packages = Object.keys(packageConfig.dependencies)
+  'src/_shared', // magic resolve in our webpack config
+].map(file => path.join(wrench, file))
 
 const resolverConfig = {
   alternatePaths,

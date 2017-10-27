@@ -38,19 +38,23 @@ const readFile = path => {
     })
   })
 }
+const fromPath = (dir, sources) => sources.map(file => path.join(dir, file))
 
+const extractNpmDependencies = path => {
+  const packageConfig = require(path)
+  return Object.keys(packageConfig.dependencies)
+}
 
 const getAbsolutePathFromfile = file => relativePath =>
   path.resolve(path.join(path.dirname(file), relativePath))
 
-const isLocalImport = filepath => filepath.includes('/')
-
 
 module.exports = {
   debug,
+  extractNpmDependencies,
+  fromPath,
   getAbsolutePathFromfile,
   getDir: path.dirname,
-  isLocalImport,
   readFile,
   tryExtensions,
   tryFile,
