@@ -1,6 +1,6 @@
 const { bootstrapClient, exportToDestination } = require('./migrator.js')
 const dt = require('./dependency-tree.js')
-const { concat, flatten } = require('ramda')
+const { concat, flatten, uniq } = require('ramda')
 const { debug } = require('./lib.js')
 const {
   resolverConfig,
@@ -14,6 +14,7 @@ const getDependencies = dt(resolverConfig)
 // crawl for dependencies
 const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies))
   .then(flatten)
+  .then(uniq)
   .then(concat(migratorConfig.extraFiles))
   .then(concat(migratorConfig.entryPoints))
 
