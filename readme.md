@@ -43,3 +43,9 @@ src/tools/photos/mounts/Photos.jsx
 //   src/_shared/components/foo.js **
 
 ```
+
+
+budgetViewer attempt
+==
+
+import bundle in app/views/company_area/configurable_budgeting/budget_templates/index.html.erb

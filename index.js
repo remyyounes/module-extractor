@@ -1,4 +1,4 @@
-const { exportToDestination } = require('./migrator.js')
+const { bootstrapClient, exportToDestination } = require('./migrator.js')
 const dt = require('./dependency-tree.js')
 const { concat, flatten } = require('ramda')
 const { debug } = require('./lib.js')
@@ -22,6 +22,12 @@ if (migratorConfig.debug) {
   dependencies
     .then(x => x.map(debug))
     .then(x => debug(x.length))
+    .then(
+      () => bootstrapClient(
+        migratorConfig.rootDir + '/src',
+        migratorConfig.entryPoints
+      )
+    )
 } else {
   // Migrate dependencies
   dependencies.then(

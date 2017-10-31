@@ -7,7 +7,7 @@ const tool = 'budgetViewer'
 
 // ASSUMING PROCORE STRUCTURE
 const wrench = path.join(procore, 'wrench')
-const hydra = path.join(procore, 'hydra')
+const hydra = path.join(procore, 'hydra_clients')
 const packages = extractNpmDependencies(path.join(wrench, 'package.json'))
 
 // extraFiles
@@ -21,22 +21,23 @@ const extraFiles = fromPath(
   [
     'src/assets',
     // configs
-    'package.json',
-    'scripts',
-    'yarn.lock',
+    // 'package.json',
+    // 'scripts',
+    // 'yarn.lock',
     // dotfiles
-    '.babelrc',
-    '.env_stub',
-    '.eslintignore',
-    '.eslintrc',
-    '.flowconfig',
-    '.github',
-    '.gitignore',
-    '.hound.yml',
-    '.mocha.opts',
-    '.npmignore',
-    '.npmrc',
-    '.nvmrc',
+    // '.babelrc', // neutrino is in charge of delegating to babel
+    '.env',
+    // '.env_stub',
+    // '.eslintignore',
+    // '.eslintrc',
+    // '.flowconfig',
+    // '.github',
+    // '.gitignore',
+    // '.hound.yml',
+    // '.mocha.opts',
+    // '.npmignore',
+    // '.npmrc',
+    // '.nvmrc',
   ]
 )
 // entryPoints
@@ -45,6 +46,10 @@ const extraFiles = fromPath(
 // The dependency crawling will start from these files
 const entryPoints = [
   'src/tools/budgetViewer/mounts/projectLevel/View.js',
+  'src/tools/budgetViewer/mounts/projectLevel/CreateSnapshot.js',
+  'src/tools/budgetViewer/mounts/projectLevel/DeleteSnapshot.js',
+  'src/tools/budgetViewer/mounts/companyLevel/Create.js',
+  'src/tools/budgetViewer/mounts/companyLevel/Edit.js',
 ].map(file => path.join(wrench, file))
 
 const migratorConfig = {

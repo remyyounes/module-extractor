@@ -13,8 +13,8 @@ const tryFile = file => {
     return undefined
   }
 }
-const tryExtensions = extensions => path => extensions.reduce(
-  (acc, ext) => acc ? acc : tryFile(path + ext),
+const tryExtensions = extensions => file => extensions.reduce(
+  (acc, ext) => acc ? acc : tryFile(file + ext),
   undefined
 )
 
