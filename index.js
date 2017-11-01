@@ -17,23 +17,38 @@ const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies)
   .then(concat(migratorConfig.extraFiles))
   .then(concat(migratorConfig.entryPoints))
 
+const getUsedNpmPackages = (config) => () => {
+  const usedNpm = config.NPM.reduce(
+    (acc, entry) => {
+      const version = config.packageEntries[entry]
+      return version
+        ? Object.assign(acc, { [entry]: version })
+        : acc
+    }, {}
+  )
+  return usedNpm
+}
+
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
-    .then(x => x.map(debug))
-    .then(x => debug(x.length))
+    .then(getUsedNpmPackages(resolverConfig))
+    .then(usedNpmPackages => console.log(JSON.stringify(usedNpmPackages).split(',').join(',\n')))
+  //   .then(x => x.map(debug))
+  //   .then(x => debug(x.length))
+} else {
+  // Migrate dependencies
+  dependencies
+    .then(
+      exportToDestination(
+        migratorConfig.rootDir,
+        migratorConfig.destinationDir
+      )
+    )
     .then(
       () => bootstrapClient(
-        migratorConfig.rootDir + '/src',
+        `${migratorConfig.rootDir}/src`,
         migratorConfig.entryPoints
       )
     )
-} else {
-  // Migrate dependencies
-  dependencies.then(
-    exportToDestination(
-      migratorConfig.rootDir,
-      migratorConfig.destinationDir
-    )
-  )
 }

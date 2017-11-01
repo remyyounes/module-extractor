@@ -18,18 +18,18 @@ const tryExtensions = extensions => file => extensions.reduce(
   undefined
 )
 
-const readFile = path => {
+const readFile = file => {
   return new Promise((resolve, reject) => {
-    fs.lstat(path, (err, stats) => {
+    fs.lstat(file, (err, stats) => {
       if (err) {
         reject(err)
         return
       }
       if (stats.isDirectory()) { return }
       if (stats.isFile()) {
-        fs.readFile(path, 'utf-8', (err, content) => {
-          if (err) {
-            reject(err)
+        fs.readFile(file, 'utf-8', (readError, content) => {
+          if (readError) {
+            reject(readError)
             return
           }
           resolve(content)
@@ -40,9 +40,9 @@ const readFile = path => {
 }
 const fromPath = (dir, sources) => sources.map(file => path.join(dir, file))
 
-const extractNpmDependencies = path => {
-  const packageConfig = require(path)
-  return Object.keys(packageConfig.dependencies)
+const extractNpmDependencies = packageJson => {
+  const packageConfig = require(packageJson)
+  return packageConfig.dependencies
 }
 
 const getAbsolutePathFromfile = file => relativePath =>

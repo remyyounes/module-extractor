@@ -22,6 +22,26 @@ By default, it is set to your `package.json`'s dependencies entry.
 ```
 node index.js
 ```
+### Cleanup your files
+ - No more require.ensure
+ - process.env can't be destructured
+ ```
+// Breaks - 2 args
+const {
+  NODE_ENV = 'development',
+  BASE_URL = 'www',
+} = process.env;
+
+// Works - 1 args
+const {
+  NODE_ENV = 'development',
+} = process.env;
+
+// Best - 1 args
+const NODE_ENV = process.env.NODE_ENV;
+const BASE_ENV = process.env.BASE_ENV;
+```
+
 
 ## notes
 # How alternatePaths works
@@ -49,3 +69,10 @@ budgetViewer attempt
 ==
 
 import bundle in app/views/company_area/configurable_budgeting/budget_templates/index.html.erb
+
+
+
+
+=============
+rails generate hydra:client budgetViewer
+DEV_MODE=budgetViewer foreman start -f Procfile.hydra

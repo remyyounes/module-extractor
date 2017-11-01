@@ -58,17 +58,23 @@ const resolveFile = (resolver, sources, dependency) =>
     false
   )
 
+const isNpm = (cfg, dependency) => {
+  if (cfg.packages.includes(dependency)) {
+    if (!cfg.NPM.includes(dependency)) {
+      cfg.NPM.push(dependency)
+    }
+    return true
+  }
+  return false
+}
+
 const configureResolver =
-  ({
-    extensions = ['.js'],
-    packages = [],
-    alternatePaths = [],
-  }) => module => dependency => {
-    const sources = packages.includes(dependency)
+  (cfg) => module => dependency => {
+    const sources = isNpm(cfg, dependency)
       ? []
-      : [path.dirname(module)].concat(alternatePaths)
+      : [path.dirname(module)].concat(cfg.alternatePaths)
     return resolveFile(
-      tryExtensions(extensions),
+      tryExtensions(cfg.extensions),
       sources,
       dependency
     )

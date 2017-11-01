@@ -3,7 +3,7 @@ const { fromPath, extractNpmDependencies } = require('./lib.js')
 
 // MIGRATION CONFIGURATION
 const procore = '/Users/remyy/Applications/ruby/procore/'
-const tool = 'budgetViewer'
+const tool = 'budgetTest'
 
 // ASSUMING PROCORE STRUCTURE
 const wrench = path.join(procore, 'wrench')
@@ -20,24 +20,7 @@ const extraFiles = fromPath(
   wrench,
   [
     'src/assets',
-    // configs
-    // 'package.json',
-    // 'scripts',
-    // 'yarn.lock',
-    // dotfiles
-    // '.babelrc', // neutrino is in charge of delegating to babel
     '.env',
-    // '.env_stub',
-    // '.eslintignore',
-    // '.eslintrc',
-    // '.flowconfig',
-    // '.github',
-    // '.gitignore',
-    // '.hound.yml',
-    // '.mocha.opts',
-    // '.npmignore',
-    // '.npmrc',
-    // '.nvmrc',
   ]
 )
 // entryPoints
@@ -58,7 +41,7 @@ const migratorConfig = {
   extraFiles,
   rootDir: wrench,
   destinationDir: path.join(hydra, tool),
-  debug: true,
+  // debug: true,
 }
 
 // CUSTOM RESOLVER CONFIGURATION
@@ -70,8 +53,10 @@ const alternatePaths = [
 ].map(file => path.join(wrench, file))
 
 const resolverConfig = {
+  NPM: [],
   alternatePaths,
-  packages,
+  packageEntries: packages,
+  packages: Object.keys(packages),
   extensions: [
     '/index.jsx',
     '/index.js',
