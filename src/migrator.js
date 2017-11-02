@@ -23,6 +23,21 @@ const toImport = source => entry => ({
 })
 
 
+const processPackageJson = (config) => {
+  const wrenchJsonPath = path.join(config.rootDir, 'package.json')
+  const hydraJsonPath = path.join(config.destinationDir, 'package.json')
+  const wrenchPackageJson = require(wrenchJsonPath)
+  const hydraPackageJson = require(hydraJsonPath)
+
+  hydraPackageJson.dependencies = wrenchPackageJson.dependencies
+  hydraPackageJson.devDependencies = Object.assign(
+    hydraPackageJson.devDependencies,
+    wrenchPackageJson.devDependencies
+  )
+  // write back to hydraPackageJson
+  fs.writeFileSync(hydraJsonPath, JSON.stringify(hydraPackageJson, null, 2), 'utf8')
+}
+
 const bootstrapClient = (source, entryPoints) => new Promise(
   resolve => {
     const store = memFs.create()
@@ -44,4 +59,5 @@ const bootstrapClient = (source, entryPoints) => new Promise(
 module.exports = {
   exportToDestination,
   bootstrapClient,
+  processPackageJson,
 }

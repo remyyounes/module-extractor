@@ -1,7 +1,9 @@
-const fs = require('fs')
-const path = require('path')
-const { bootstrapClient, exportToDestination } = require('./src/migrator.js')
 const dt = require('./src/dependency-tree.js')
+const {
+  bootstrapClient,
+  exportToDestination,
+  processPackageJson,
+} = require('./src/migrator.js')
 const { concat, flatten, uniq } = require('ramda')
 const { debug } = require('./src/lib.js')
 const {
@@ -18,16 +20,6 @@ const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies)
   .then(flatten)
   .then(uniq)
 
-const testFiles = getAllTests()
-const relevantTests = parseForRelevantTests(testFiles)
-// 1 parse test file to AST
-// 2 check if imports are in "dependencies"
-// 3 if they are, return path
-// 4 resolve paths returned from parsing
-// 5 copy relevantTests
-
-
-
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
@@ -40,22 +32,7 @@ if (migratorConfig.debug) {
     // 3 find new hydra package.json
     // 4 replace hydra deps with wrench deps
 
-  debugger;
-  const wrenchPackageJson = require(
-    path.join(migratorConfig.rootDir, 'package.json')
-  )
 
-  const hydraPackageJsonPath =
-    path.join(migratorConfig.destinationDir, 'package.json')
-  const hydraPackageJson = require(hydraPackageJsonPath)
-
-  hydraPackageJson.dependencies = wrenchPackageJson.dependencies
-  hydraPackageJson.devDependencies = Object.assign(
-    hydraPackageJson.devDependencies,
-    wrenchPackageJson.devDependencies
-  )
-  // write back to hydraPackageJson
-  fs.writeFileSync(hydraPackageJsonPath, JSON.stringify(hydraPackageJson, null, 2), 'utf8')
 } else {
 
   // NEW FILES
@@ -71,7 +48,7 @@ if (migratorConfig.debug) {
       './templates/',
       migratorConfig.destinationDir
     )
-  )
+  ).then(() => processPackageJson(migratorConfig))
 
   // OLD FILES
   // Copy Files
@@ -84,4 +61,12 @@ if (migratorConfig.debug) {
         migratorConfig.destinationDir
       )
     )
+
+    // const testFiles = getAllTests()
+    // const relevantTests = parseForRelevantTests(testFiles)
+    // 1 parse test file to AST
+    // 2 check if imports are in "dependencies"
+    // 3 if they are, return path
+    // 4 resolve paths returned from parsing
+    // 5 copy relevantTests
 }
