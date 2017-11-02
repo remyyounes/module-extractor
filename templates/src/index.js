@@ -8,7 +8,7 @@ const load = () => {
   const node = document.getElementById('root');
   const props = JSON.parse(node.dataset.reactProps);
   const reactComponent = node.dataset.reactComponent;
-  debugger;
+
   return render((
     <AppContainer>
       <App reactComponent={reactComponent} data={props}/>

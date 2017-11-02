@@ -1,10 +1,21 @@
 const path = require('path')
 const fs = require('fs-extra')
+const { filter } = require('ramda')
 
+// UTILS
+const taskDone = task => console.log('taskDone:', task)
+const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
+const filterValid = filter(x => x)
 const debug = x => {
   console.log(x)
   return x
 }
+
+
+// FILE UTILS
+const fromPath = (dir, sources) => sources.map(file => path.join(dir, file))
+const getAbsolutePathFromfile = file => relativePath =>
+  path.resolve(path.join(path.dirname(file), relativePath))
 
 const tryFile = file => {
   try {
@@ -38,24 +49,23 @@ const readFile = file => {
     })
   })
 }
-const fromPath = (dir, sources) => sources.map(file => path.join(dir, file))
 
+// PACKAGE.JSON UTILS
 const extractNpmDependencies = packageJson => {
   const packageConfig = require(packageJson)
   return packageConfig.dependencies
 }
 
-const getAbsolutePathFromfile = file => relativePath =>
-  path.resolve(path.join(path.dirname(file), relativePath))
-
-
 module.exports = {
   debug,
   extractNpmDependencies,
   fromPath,
+  filterValid,
   getAbsolutePathFromfile,
   getDir: path.dirname,
+  mapP,
   readFile,
+  taskDone,
   tryExtensions,
   tryFile,
 }

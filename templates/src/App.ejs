@@ -1,4 +1,14 @@
 import React from 'react';
+<%-
+  imports.map(
+    ({name, source}) => `import ${name} from '${source}'`
+  ).join('\n')
+%>
+
+const components = {
+  <%= components.join(',\n  ') %>
+};
+
 
 const App = ({reactComponent, data}) => {
   const Component = components[reactComponent];

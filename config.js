@@ -1,9 +1,9 @@
 const path = require('path')
-const { fromPath, extractNpmDependencies } = require('./lib.js')
+const { fromPath, extractNpmDependencies } = require('./src/lib.js')
 
 // MIGRATION CONFIGURATION
 const procore = '/Users/remyy/Applications/ruby/procore/'
-const tool = 'budgetTest'
+const tool = 'budgetViewer'
 
 // ASSUMING PROCORE STRUCTURE
 const wrench = path.join(procore, 'wrench')
@@ -41,7 +41,7 @@ const migratorConfig = {
   extraFiles,
   rootDir: wrench,
   destinationDir: path.join(hydra, tool),
-  // debug: true,
+  debug: true,
 }
 
 // CUSTOM RESOLVER CONFIGURATION
@@ -53,7 +53,6 @@ const alternatePaths = [
 ].map(file => path.join(wrench, file))
 
 const resolverConfig = {
-  NPM: [],
   alternatePaths,
   packageEntries: packages,
   packages: Object.keys(packages),

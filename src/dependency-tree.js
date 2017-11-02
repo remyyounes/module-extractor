@@ -1,20 +1,22 @@
 const acorn = require('acorn/dist/acorn_loose')
 const path = require('path')
 const walk = require('acorn/dist/walk')
-const { debug, readFile, tryExtensions } = require('./lib.js')
+const {
+  mapP,
+  readFile,
+  tryExtensions,
+  filterValid,
+} = require('./lib.js')
 const {
   map,
   uniq,
-  filter,
   flatten,
   concat,
   pipeP,
 } = require('ramda')
 
 // UTILS
-const filterImports = filter(x => x)
 
-const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
 const traverseAndMerge = traverse => list => pipeP(
   mapP(traverse),
   concat(list),
@@ -58,15 +60,7 @@ const resolveFile = (resolver, sources, dependency) =>
     false
   )
 
-const isNpm = (cfg, dependency) => {
-  if (cfg.packages.includes(dependency)) {
-    if (!cfg.NPM.includes(dependency)) {
-      cfg.NPM.push(dependency)
-    }
-    return true
-  }
-  return false
-}
+const isNpm = (cfg, dependency) => cfg.packages.includes(dependency)
 
 const configureResolver =
   (cfg) => module => dependency => {
@@ -93,7 +87,7 @@ module.exports = config => {
       readFile,
       extractImports,
       map(resolver(file)),
-      filterImports,
+      filterValid,
       traverseAndMerge(getDependencies)
     )(file)
   }

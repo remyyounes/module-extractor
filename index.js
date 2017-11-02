@@ -1,7 +1,9 @@
-const { bootstrapClient, exportToDestination } = require('./migrator.js')
-const dt = require('./dependency-tree.js')
+const fs = require('fs')
+const path = require('path')
+const { bootstrapClient, exportToDestination } = require('./src/migrator.js')
+const dt = require('./src/dependency-tree.js')
 const { concat, flatten, uniq } = require('ramda')
-const { debug } = require('./lib.js')
+const { debug } = require('./src/lib.js')
 const {
   resolverConfig,
   migratorConfig,
@@ -15,41 +17,71 @@ const getDependencies = dt(resolverConfig)
 const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies))
   .then(flatten)
   .then(uniq)
-  .then(concat(migratorConfig.extraFiles))
-  .then(concat(migratorConfig.entryPoints))
 
-const getUsedNpmPackages = (config) => () => {
-  const usedNpm = config.NPM.reduce(
-    (acc, entry) => {
-      const version = config.packageEntries[entry]
-      return version
-        ? Object.assign(acc, { [entry]: version })
-        : acc
-    }, {}
-  )
-  return usedNpm
-}
+const testFiles = getAllTests()
+const relevantTests = parseForRelevantTests(testFiles)
+// 1 parse test file to AST
+// 2 check if imports are in "dependencies"
+// 3 if they are, return path
+// 4 resolve paths returned from parsing
+// 5 copy relevantTests
+
+
 
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
-    .then(getUsedNpmPackages(resolverConfig))
-    .then(usedNpmPackages => console.log(JSON.stringify(usedNpmPackages).split(',').join(',\n')))
-  //   .then(x => x.map(debug))
-  //   .then(x => debug(x.length))
+    .then(x => x.map(debug))
+    .then(x => debug(x.length))
+
+    // PACKAGE.JSON Dependency Injection
+    // 1 find wrench package.json
+    // 2 get devDeps and dependencies
+    // 3 find new hydra package.json
+    // 4 replace hydra deps with wrench deps
+
+  debugger;
+  const wrenchPackageJson = require(
+    path.join(migratorConfig.rootDir, 'package.json')
+  )
+
+  const hydraPackageJsonPath =
+    path.join(migratorConfig.destinationDir, 'package.json')
+  const hydraPackageJson = require(hydraPackageJsonPath)
+
+  hydraPackageJson.dependencies = wrenchPackageJson.dependencies
+  hydraPackageJson.devDependencies = Object.assign(
+    hydraPackageJson.devDependencies,
+    wrenchPackageJson.devDependencies
+  )
+  // write back to hydraPackageJson
+  fs.writeFileSync(hydraPackageJsonPath, JSON.stringify(hydraPackageJson, null, 2), 'utf8')
 } else {
-  // Migrate dependencies
+
+  // NEW FILES
+  // Generate extra files from Templates
+  bootstrapClient(
+    `${migratorConfig.rootDir}/src`,
+    migratorConfig.entryPoints
+  ).then(concat([
+    './templates/src/index.js',
+    './templates/.neutrinorc.js',
+  ])).then(
+    exportToDestination(
+      './templates/',
+      migratorConfig.destinationDir
+    )
+  )
+
+  // OLD FILES
+  // Copy Files
   dependencies
+    .then(concat(migratorConfig.extraFiles))
+    .then(concat(migratorConfig.entryPoints))
     .then(
       exportToDestination(
         migratorConfig.rootDir,
         migratorConfig.destinationDir
-      )
-    )
-    .then(
-      () => bootstrapClient(
-        `${migratorConfig.rootDir}/src`,
-        migratorConfig.entryPoints
       )
     )
 }
