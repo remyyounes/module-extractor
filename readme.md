@@ -102,3 +102,20 @@ import bundle in app/views/company_area/configurable_budgeting/budget_templates/
 =============
 rails generate hydra:client budgetViewer
 DEV_MODE=budgetViewer foreman start -f Procfile.hydra
+
+========
+mounting
+========
+<!-- NEW  -->
+  <%= content_tag(
+    :div,
+    nil,
+    id: 'root',
+    data: {
+      'react-component': 'Edit',
+      'react-props': @budget_edit_configuration.component_props.to_json
+    }
+  )
+  %>
+
+  <%= client_javascript_include_tag("budgetViewer") %>
