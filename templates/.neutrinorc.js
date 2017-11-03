@@ -5,17 +5,27 @@ module.exports = {
   },
   use: [
     'neutrino-preset-react',
-    [
-      'neutrino-preset-jest',
-      {
-        verbose: false,
-        moduleNameMapper: {
-          "\\.(css|scss|sass)$": 'identity-obj-proxy'
-        },
-        // Shims must be first in the setup array
-        setupFiles: ['<rootDir>/test-shims.js', '<rootDir>/test-setup.js']
-      }
-    ],
+    // [
+    //   'neutrino-preset-jest',
+    //   {
+    //     verbose: false,
+    //     moduleNameMapper: {
+    //       "\\.(css|scss|sass)$": 'identity-obj-proxy'
+    //     },
+    //     // Shims must be first in the setup array
+    //     setupFiles: ['<rootDir>/test-shims.js', '<rootDir>/test-setup.js']
+    //   }
+    // ],
+    ['neutrino-preset-mocha', {
+      compilers: 'js:babel-core/register',
+      require: [
+        'babel-polyfill',
+        'src/_shared/tests/testHelper.js',
+        'sinon',
+      ],
+      recursive: true,
+      timeout: 10000,
+    }],
     ['neutrino-middleware-extract-sass'],
     ['neutrino-preset-hydra-base', { protocol: 'http', host: 'localhost', port: 5000, }],
     ({ config, options }) => {
