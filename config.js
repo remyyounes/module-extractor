@@ -34,7 +34,7 @@ const extraFiles = fromPath(
   wrench,
   [
     'src/assets',
-    'src/_shared/tests'
+    'src/_shared/tests',
     '.env',
     config.toolRoot,
   ]
