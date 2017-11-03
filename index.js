@@ -11,7 +11,7 @@ const {
   flatten,
   uniq,
 } = require('ramda')
-const { debug, filterValid } = require('./src/lib.js')
+const { debug, filterValid, sort } = require('./src/lib.js')
 const {
   resolverConfig,
   migratorConfig,
@@ -31,11 +31,12 @@ const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies)
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
+    .then(concat(migratorConfig.extraFiles))
+    .then(uniq)
+    .then(sort)
     .then(map(debug))
     .then(x => debug(x.length))
-
 } else {
-
   // NEW FILES
   // Generate extra files from Templates
   bootstrapClient(
@@ -56,6 +57,7 @@ if (migratorConfig.debug) {
   dependencies
     .then(concat(migratorConfig.extraFiles))
     .then(concat(migratorConfig.entryPoints))
+    .then(uniq)
     .then(
       exportToDestination(
         migratorConfig.rootDir,

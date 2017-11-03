@@ -1,13 +1,27 @@
+// Eventually move this to a configuration file
+// .module-extractor.rc
+const config = {
+  // sourceDir: '/Users/remyy/Applications/ruby/procore/',
+  sourceDir: '/Users/georgemichael/Code/Procore/procore',
+  destinationDir: 'budgetViewer',
+  toolRoot: 'src/tools/budgetViewer',
+  entryPoints: [
+    'src/tools/budgetViewer/mounts/projectLevel/View.js',
+    'src/tools/budgetViewer/mounts/projectLevel/CreateSnapshot.js',
+    'src/tools/budgetViewer/mounts/projectLevel/DeleteSnapshot.js',
+    'src/tools/budgetViewer/mounts/companyLevel/Create.js',
+    'src/tools/budgetViewer/mounts/companyLevel/Edit.js',
+  ],
+}
+
 const path = require('path')
 const { fromPath, extractNpmDependencies } = require('./src/lib.js')
 
 // MIGRATION CONFIGURATION
-const procore = '/Users/remyy/Applications/ruby/procore/'
-const tool = 'budgetViewer'
 
 // ASSUMING PROCORE STRUCTURE
-const wrench = path.join(procore, 'wrench')
-const hydra = path.join(procore, 'hydra_clients')
+const wrench = path.join(config.sourceDir, 'wrench')
+const hydra = path.join(config.sourceDir, 'hydra_clients')
 const packages = extractNpmDependencies(path.join(wrench, 'package.json'))
 
 // extraFiles
@@ -21,36 +35,29 @@ const extraFiles = fromPath(
   [
     'src/assets',
     '.env',
+    config.toolRoot,
   ]
 )
 // entryPoints
 // ==========
 // Mount points you want to migrate to hydra
 // The dependency crawling will start from these files
-const entryPoints = [
-  'src/tools/budgetViewer/mounts/projectLevel/View.js',
-  'src/tools/budgetViewer/mounts/projectLevel/CreateSnapshot.js',
-  'src/tools/budgetViewer/mounts/projectLevel/DeleteSnapshot.js',
-  'src/tools/budgetViewer/mounts/companyLevel/Create.js',
-  'src/tools/budgetViewer/mounts/companyLevel/Edit.js',
-].map(file => path.join(wrench, file))
+const entryPoints = fromPath(wrench, config.entryPoints)
 
 const migratorConfig = {
   hydra,
   entryPoints,
   extraFiles,
   rootDir: wrench,
-  destinationDir: path.join(hydra, tool),
-  // debug: true,
+  destinationDir: path.join(hydra, config.destinationDir),
+  debug: true,
 }
 
 // CUSTOM RESOLVER CONFIGURATION
 // =============================
 // The current resolver is not smart enough to resolve in these paths
 // Depending on your tool needs, specify extra paths
-const alternatePaths = [
-  'src/_shared', // magic resolve in our webpack config
-].map(file => path.join(wrench, file))
+const alternatePaths = fromPath(wrench, ['src/_shared'])
 
 const resolverConfig = {
   alternatePaths,

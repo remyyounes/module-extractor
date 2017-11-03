@@ -7,10 +7,10 @@ const taskDone = task => console.log('taskDone:', task)
 const mapP = mapFunction => list => Promise.all(list.map(mapFunction))
 const filterValid = filter(x => x)
 const debug = x => {
-  console.log(x)
+  console.log(JSON.stringify(x, null, 2))
   return x
 }
-
+const sort = list => list.sort()
 
 // FILE UTILS
 const fromPath = (dir, sources) => sources.map(file => path.join(dir, file))
@@ -68,4 +68,5 @@ module.exports = {
   taskDone,
   tryExtensions,
   tryFile,
+  sort,
 }
