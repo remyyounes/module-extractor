@@ -41,7 +41,7 @@ const migratorConfig = {
   extraFiles,
   rootDir: wrench,
   destinationDir: path.join(hydra, tool),
-  debug: true,
+  // debug: true,
 }
 
 // CUSTOM RESOLVER CONFIGURATION

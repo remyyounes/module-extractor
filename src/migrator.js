@@ -56,8 +56,24 @@ const bootstrapClient = (source, entryPoints) => new Promise(
     })
   })
 
+const includes = name => file => file.includes(name)
+const getMatchingFiles = (dir, name) =>
+  fs.readdirSync(dir).filter(includes(name))
+
+const getTests = files => {
+  return files.map(file => {
+    const dir = path.dirname(file)
+    const name = path.basename(file).split('.')[0]
+    const testDir = path.join(dir, '__tests__')
+    return fs.existsSync(testDir)
+      ? getMatchingFiles(testDir, name).map(f => path.join(testDir, f))
+      : null
+  })
+}
+
 module.exports = {
   exportToDestination,
   bootstrapClient,
+  getTests,
   processPackageJson,
 }

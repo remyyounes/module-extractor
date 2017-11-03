@@ -2,10 +2,16 @@ const dt = require('./src/dependency-tree.js')
 const {
   bootstrapClient,
   exportToDestination,
+  getTests,
   processPackageJson,
 } = require('./src/migrator.js')
-const { concat, flatten, uniq } = require('ramda')
-const { debug } = require('./src/lib.js')
+const {
+  map,
+  concat,
+  flatten,
+  uniq,
+} = require('ramda')
+const { debug, filterValid } = require('./src/lib.js')
 const {
   resolverConfig,
   migratorConfig,
@@ -18,20 +24,15 @@ const getDependencies = dt(resolverConfig)
 // crawl for dependencies
 const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies))
   .then(flatten)
+  .then(deps => deps.concat(filterValid(getTests(deps))))
+  .then(flatten)
   .then(uniq)
 
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
-    .then(x => x.map(debug))
+    .then(map(debug))
     .then(x => debug(x.length))
-
-    // PACKAGE.JSON Dependency Injection
-    // 1 find wrench package.json
-    // 2 get devDeps and dependencies
-    // 3 find new hydra package.json
-    // 4 replace hydra deps with wrench deps
-
 
 } else {
 
@@ -61,12 +62,4 @@ if (migratorConfig.debug) {
         migratorConfig.destinationDir
       )
     )
-
-    // const testFiles = getAllTests()
-    // const relevantTests = parseForRelevantTests(testFiles)
-    // 1 parse test file to AST
-    // 2 check if imports are in "dependencies"
-    // 3 if they are, return path
-    // 4 resolve paths returned from parsing
-    // 5 copy relevantTests
 }
