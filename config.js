@@ -36,6 +36,10 @@ const extraFiles = fromPath(
     'src/assets',
     'src/_shared/tests',
     '.env',
+    '.eslintignore',
+    '.eslintrc',
+    '.gitignore',
+    '.hound.yml',
     config.toolRoot,
   ]
 )
@@ -51,7 +55,7 @@ const migratorConfig = {
   extraFiles,
   rootDir: wrench,
   destinationDir: path.join(hydra, config.destinationDir),
-  debug: true,
+  // debug: true,
 }
 
 // CUSTOM RESOLVER CONFIGURATION
