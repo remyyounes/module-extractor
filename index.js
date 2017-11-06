@@ -22,18 +22,16 @@ const {
 const getDependencies = dt(resolverConfig)
 
 // crawl for dependencies
-const dependencies = Promise.all(migratorConfig.entryPoints.map(getDependencies))
-  .then(flatten)
+const dependencies = getDependencies(migratorConfig.entryPoints)
   .then(deps => deps.concat(filterValid(getTests(deps))))
-  .then(flatten)
+  .then(concat(migratorConfig.entryPoints))
+  .then(concat(migratorConfig.extraFiles))
   .then(uniq)
+  .then(sort)
 
 if (migratorConfig.debug) {
   // Log dependencies on Dry runs
   dependencies
-    .then(concat(migratorConfig.extraFiles))
-    .then(uniq)
-    .then(sort)
     .then(map(debug))
     .then(x => debug(x.length))
 } else {
@@ -44,6 +42,7 @@ if (migratorConfig.debug) {
     migratorConfig.entryPoints
   ).then(concat([
     './templates/src/index.js',
+    './templates/src/_shared/tests/testHelper.js',
     './templates/.neutrinorc.js',
   ])).then(
     exportToDestination(
@@ -55,9 +54,6 @@ if (migratorConfig.debug) {
   // OLD FILES
   // Copy Files
   dependencies
-    .then(concat(migratorConfig.extraFiles))
-    .then(concat(migratorConfig.entryPoints))
-    .then(uniq)
     .then(
       exportToDestination(
         migratorConfig.rootDir,

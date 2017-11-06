@@ -119,3 +119,26 @@ mounting
   %>
 
   <%= client_javascript_include_tag("budgetViewer") %>
+
+
+========
+test problem resolution
+========
+
+- Removed all mocha imports
+- had to change this import to make the test pass
+```
+// src/tools/budgetViewer/components/shared/__tests__/sourceColumnDisplayFormatter.js
+import sF from '../sourceColumnDisplayFormatter';
+const {
+  getSelectedSourceCategory,
+  getSourcesInSelectedCategory,
+  getFiltersInSourceByCategory,
+  isDefinedSource,
+  isFilterCheckedFor,
+  sourceColumnFormatted,
+  getSourceCategoryLabel,
+} = sF;```
+
+// need mocha preset
+ yarn add --dev neutrino-preset-mocha

@@ -19,9 +19,8 @@ const {
 
 const traverseAndMerge = traverse => list => pipeP(
   mapP(traverse),
-  concat(list),
   flatten,
-  uniq
+  concat(list)
 )(list)
 
 // tmp hack
@@ -91,6 +90,8 @@ module.exports = config => {
       traverseAndMerge(getDependencies)
     )(file)
   }
-
-  return getDependencies
+  return dependencies =>
+    Promise.all(dependencies.map(getDependencies))
+      .then(flatten)
+      .then(uniq)
 }
