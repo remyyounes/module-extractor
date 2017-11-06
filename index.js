@@ -26,7 +26,6 @@ const dependencies = getDependencies(migratorConfig.entryPoints)
   .then(deps => deps.concat(filterValid(getTests(deps))))
   .then(concat(migratorConfig.entryPoints))
   .then(concat(migratorConfig.extraFiles))
-  .then(uniq)
   .then(sort)
 
 if (migratorConfig.debug) {
@@ -37,19 +36,6 @@ if (migratorConfig.debug) {
 } else {
   // NEW FILES
   // Generate extra files from Templates
-  bootstrapClient(
-    `${migratorConfig.rootDir}/src`,
-    migratorConfig.entryPoints
-  ).then(concat([
-    './templates/src/index.js',
-    './templates/src/_shared/tests/testHelper.js',
-    './templates/.neutrinorc.js',
-  ])).then(
-    exportToDestination(
-      './templates/',
-      migratorConfig.destinationDir
-    )
-  ).then(() => processPackageJson(migratorConfig))
 
   // OLD FILES
   // Copy Files
@@ -59,5 +45,19 @@ if (migratorConfig.debug) {
         migratorConfig.rootDir,
         migratorConfig.destinationDir
       )
-    )
+    ).then( ()  => {
+      bootstrapClient(
+        `${migratorConfig.rootDir}/src`,
+        migratorConfig.entryPoints
+      ).then(concat([
+        './templates/src/index.js',
+        './templates/src/_shared/tests/testHelper.js',
+        './templates/.neutrinorc.js',
+      ])).then(
+        exportToDestination(
+          './templates/',
+          migratorConfig.destinationDir
+        )
+      ).then(() => processPackageJson(migratorConfig))
+    })
 }

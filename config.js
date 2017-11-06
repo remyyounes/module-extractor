@@ -5,6 +5,9 @@ const config = {
   // sourceDir: '/Users/georgemichael/Code/Procore/procore',
   destinationDir: 'budgetViewer',
   toolRoot: 'src/tools/budgetViewer',
+  extraFiles: [
+    'src/_shared/decorators/sagaProvider/__tests__/MockComponent.jsx',
+  ],
   entryPoints: [
     'src/tools/budgetViewer/mounts/projectLevel/View.js',
     'src/tools/budgetViewer/mounts/projectLevel/CreateSnapshot.js',
@@ -34,14 +37,17 @@ const packages = extractNpmDependencies(wrenchPackageJson)
 const extraFiles = [
   'src/assets',
   'src/_shared/tests',
-  'src/_shared/decorators/sagaProvider/__tests__/MockComponent.jsx'
   '.env',
   '.eslintignore',
   '.eslintrc',
   '.gitignore',
+  'yarn.lock',
   '.hound.yml',
   config.toolRoot,
-]
+].concat(config.extraFiles)
+
+
+
 // entryPoints
 // ==========
 // Mount points you want to migrate to hydra

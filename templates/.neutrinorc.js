@@ -4,25 +4,10 @@ module.exports = {
     tests: 'src'
   },
   use: [
-    'neutrino-preset-react',
-    // [
-    //   'neutrino-preset-jest',
-    //   {
-    //     verbose: false,
-    //     moduleNameMapper: {
-    //       "\\.(css|scss|sass)$": 'identity-obj-proxy'
-    //     },
-    //     // Shims must be first in the setup array
-    //     setupFiles: ['<rootDir>/test-shims.js', '<rootDir>/test-setup.js']
-    //   }
-    // ],
+    ['neutrino-preset-react'],
     ['neutrino-preset-mocha', {
       compilers: 'js:babel-core/register',
-      require: [
-        'babel-polyfill',
-        'src/_shared/tests/testHelper.js',
-        'sinon',
-      ],
+      require: './src/_shared/tests/testHelper.js',
       recursive: true,
       timeout: 10000,
     }],

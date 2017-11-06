@@ -3,6 +3,7 @@ const fs = require('fs-extra')
 const memFs = require('mem-fs')
 const editor = require('mem-fs-editor')
 const { taskDone } = require('./lib.js')
+const { compose, flatten, map, uniq } = require('ramda')
 
 const exportToDestination = (source, destination) => files => {
   files.map(absolutePath => {
@@ -34,6 +35,9 @@ const processPackageJson = (config) => {
     hydraPackageJson.devDependencies,
     wrenchPackageJson.devDependencies
   )
+
+  hydraPackageJson.scripts.test =
+    "neutrino test $(find . -type d -name '__tests__' -not -path '*/node_modules/*')"
   // write back to hydraPackageJson
   fs.writeFileSync(hydraJsonPath, JSON.stringify(hydraPackageJson, null, 2), 'utf8')
 }
@@ -60,8 +64,10 @@ const includes = name => file => file.includes(name)
 const getMatchingFiles = (dir, name) =>
   fs.readdirSync(dir).filter(includes(name))
 
-const getTests = files => {
-  return files.map(file => {
+const getTests = compose(
+  uniq,
+  flatten,
+  map(file => {
     const dir = path.dirname(file)
     const name = path.basename(file).split('.')[0]
     const testDir = path.join(dir, '__tests__')
@@ -69,8 +75,7 @@ const getTests = files => {
       ? getMatchingFiles(testDir, name).map(f => path.join(testDir, f))
       : null
   })
-}
-
+)
 module.exports = {
   exportToDestination,
   bootstrapClient,

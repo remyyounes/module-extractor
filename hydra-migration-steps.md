@@ -1,11 +1,36 @@
-# Migration Steps
-0. rails generate hydra:client <CLIENT_NAME>
-0. add module-extractor config file
-0. run module-extractor
-0. Fix Mounting / Connecting
-  - JS mount points no longer use promises from the JS side (see section)
-  - ERB mounting should use the Hydra helper on rails side (see section)
+# Procore Fixes before migration
 0. Fix the "process" bug
+0. Update yarn.lock:
+  - flexbox-react@4.1.0
+
+# Migration Steps
+0. rails generate hydra:client CLIENT_NAME
+0. clone module-extractor
+0. modify config object in module-extractor/config.js
+0. run module-extractor ($node index)
+
+# Manual hydra client fixes
+0. yarn add --dev neutrino-preset-mocha
+0. yarn install
+0. Fix Mounting / Connecting
+- JS mount points no longer use promises from the JS side (see section)
+- ERB mounting should use the Hydra helper on rails side (see section)
+0. Fix the Tests
+  - remove mocha imports
+  - fix any destructuring issues
+
+
+# Fix the Tests
+## modify test script in package.json:
+We need to use the old test command to find our test suite, change the "test" key in the new package.json
+
+```json
+  "test": "neutrino test $(find . -type d -name '__tests__' -not -path '*/node_modules/*')" ,
+```
+## Mocha Imports
+ comment out / remove all of the mocha imports using this regex: `/import (.*) from 'mocha'/`
+
+ We no longer need to import these files as the test configuration will do this for us.
 
 # Fixing the Mounting / Connecting
 Having to rewire the components through hydra is the only manual labor left, but
