@@ -1,8 +1,8 @@
 // Eventually move this to a configuration file
 // .module-extractor.rc
 const config = {
-  // sourceDir: '/Users/remyy/Applications/ruby/procore/',
-  sourceDir: '/Users/georgemichael/Code/Procore/procore',
+  sourceDir: '/Users/remyy/Applications/ruby/procore/',
+  // sourceDir: '/Users/georgemichael/Code/Procore/procore',
   destinationDir: 'budgetViewer',
   toolRoot: 'src/tools/budgetViewer',
   entryPoints: [
@@ -22,7 +22,8 @@ const { fromPath, extractNpmDependencies } = require('./src/lib.js')
 // ASSUMING PROCORE STRUCTURE
 const wrench = path.join(config.sourceDir, 'wrench')
 const hydra = path.join(config.sourceDir, 'hydra_clients')
-const packages = extractNpmDependencies(path.join(wrench, 'package.json'))
+const wrenchPackageJson = path.join(wrench, 'package.json')
+const packages = extractNpmDependencies(wrenchPackageJson)
 
 // extraFiles
 // ==========
@@ -30,29 +31,26 @@ const packages = extractNpmDependencies(path.join(wrench, 'package.json'))
 // Because we can't extract imgage imports from those CSS files
 // We need to hard code the paths in extraFiles
 
-const extraFiles = fromPath(
-  wrench,
-  [
-    'src/assets',
-    'src/_shared/tests',
-    '.env',
-    '.eslintignore',
-    '.eslintrc',
-    '.gitignore',
-    '.hound.yml',
-    config.toolRoot,
-  ]
-)
+const extraFiles = [
+  'src/assets',
+  'src/_shared/tests',
+  'src/_shared/decorators/sagaProvider/__tests__/MockComponent.jsx'
+  '.env',
+  '.eslintignore',
+  '.eslintrc',
+  '.gitignore',
+  '.hound.yml',
+  config.toolRoot,
+]
 // entryPoints
 // ==========
 // Mount points you want to migrate to hydra
 // The dependency crawling will start from these files
-const entryPoints = fromPath(wrench, config.entryPoints)
 
 const migratorConfig = {
   hydra,
-  entryPoints,
-  extraFiles,
+  entryPoints: fromPath(wrench, config.entryPoints),
+  extraFiles: fromPath(wrench, extraFiles),
   rootDir: wrench,
   destinationDir: path.join(hydra, config.destinationDir),
   // debug: true,
@@ -62,10 +60,9 @@ const migratorConfig = {
 // =============================
 // The current resolver is not smart enough to resolve in these paths
 // Depending on your tool needs, specify extra paths
-const alternatePaths = fromPath(wrench, ['src/_shared'])
 
 const resolverConfig = {
-  alternatePaths,
+  alternatePaths: fromPath(wrench, ['src/_shared']),
   packageEntries: packages,
   packages: Object.keys(packages),
   extensions: [
