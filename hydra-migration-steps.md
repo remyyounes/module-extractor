@@ -19,14 +19,6 @@
   - remove mocha imports
   - fix any destructuring issues
 
-
-# Fix the Tests
-## modify test script in package.json:
-We need to use the old test command to find our test suite, change the "test" key in the new package.json
-
-```json
-  "test": "neutrino test $(find . -type d -name '__tests__' -not -path '*/node_modules/*')" ,
-```
 ## Mocha Imports
  comment out / remove all of the mocha imports using this regex: `/import (.*) from 'mocha'/`
 
