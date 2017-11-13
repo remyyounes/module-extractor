@@ -1,7 +1,3 @@
-# Procore Fixes before migration
-0. Investigate why only pre "styled components" for flexbox-react works
-  - flexbox-react@4.1.0
-
 # Migration Steps
 0. `$ rails generate hydra:client <CLIENT_NAME>`
 0. clone module-extractor
@@ -97,3 +93,5 @@ Here is the new syntax
 
 Important notes!
 - client_javascript_include_tag must come after the content tag!
+- Don't have the same component served up by both `react_component` and
+  `client_javascript_include_tag` this will result in unwanted behaviour
