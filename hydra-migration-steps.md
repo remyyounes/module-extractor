@@ -1,17 +1,17 @@
 # Procore Fixes before migration
-0. Fix the "process" bug
-0. Update yarn.lock:
+0. Investigate why only pre "styled components" for flexbox-react works
   - flexbox-react@4.1.0
 
 # Migration Steps
-0. rails generate hydra:client CLIENT_NAME
+0. `$ rails generate hydra:client <CLIENT_NAME>`
 0. clone module-extractor
 0. modify config object in module-extractor/config.js
-0. run module-extractor ($node index)
+0. run module-extractor (`$ node index`)
 
 # Manual hydra client fixes
-0. yarn add --dev neutrino-preset-mocha
-0. yarn install
+0. `$ cd hydra_clients/<CLIENT_NAME>`
+0. `$ yarn add --dev neutrino-preset-mocha`
+0. `$ yarn install`
 0. Fix Mounting / Connecting
 - JS mount points no longer use promises from the JS side (see section)
 - ERB mounting should use the Hydra helper on rails side (see section)

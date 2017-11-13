@@ -47,7 +47,6 @@ const extraFiles = [
 ].concat(config.extraFiles)
 
 
-
 // entryPoints
 // ==========
 // Mount points you want to migrate to hydra
