@@ -1,19 +1,19 @@
 # Migration Steps
-0. `$ rails generate hydra:client <CLIENT_NAME>`
-0. clone module-extractor
-0. modify config object in module-extractor/config.js
-0. run module-extractor (`$ node index`)
+1. `$ rails generate hydra:client <CLIENT_NAME>`
+1. clone module-extractor
+1. modify config object in module-extractor/config.js
+1. run module-extractor (`$ node index`)
 
 # Manual hydra client fixes
-0. `$ cd hydra_clients/<CLIENT_NAME>`
-0. `$ yarn add --dev neutrino-preset-mocha`
-0. `$ yarn install`
-0. Fix Mounting / Connecting
-- JS mount points no longer use promises from the JS side (see section)
-- ERB mounting should use the Hydra helper on rails side (see section)
-0. Fix the Tests
-  - remove mocha imports
-  - fix any destructuring issues
+1. `$ cd hydra_clients/<CLIENT_NAME>`
+1. `$ yarn add --dev neutrino-preset-mocha`
+1. `$ yarn install`
+1. Fix Mounting / Connecting
+    1. JS mount points no longer use promises from the JS side (see section)
+    1. ERB mounting should use the Hydra helper on rails side (see section)
+1. Fix the Tests
+    1. remove mocha imports
+    1. fix any destructuring issues
 
 ## Mocha Imports
  comment out / remove all of the mocha imports using this regex: `/import (.*) from 'mocha'/`
