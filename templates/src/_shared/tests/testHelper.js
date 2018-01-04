@@ -10,9 +10,7 @@ import { jsdom } from 'jsdom';
 import hook from 'css-modules-require-hook';
 import sass from 'node-sass';
 import register from 'ignore-styles'
-require('babel-polyfill')
-require('mocha')
-require('sinon')
+
 // Ignore CSS styles
 register(['.css']);
 
@@ -73,6 +71,8 @@ global.localStorage = {
 global.window = {
 
   ... global.window,
+
+  HTMLIFrameElement: () => {},
 
   location: {
     search: '',

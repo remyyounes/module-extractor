@@ -95,6 +95,14 @@ Here is the new syntax
 - client_javascript_include_tag must come after the content tag!
 - Don't have the same component served up by both `react_component` and
   `client_javascript_include_tag` this will result in unwanted behaviour
-- For some reason, using moment with a react-widget DateTimePicker seems to not
+- using moment with a react-widget DateTimePicker seems to not
   work. See [this github
   issue](https://github.com/jquense/react-widgets/issues/223#issuecomment-147394659) for more details.
+  You can fix this issue by adding these lines to the component you are having
+  issues with: 
+  ```js
+  import DateTimePicker from 'react-widgets/lib/DateTimePicker';
+  import momentLocalizer from 'react-widgets/lib/localizers/moment';
+
+  momentLocalizer(moment);
+  ```

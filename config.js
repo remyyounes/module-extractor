@@ -67,7 +67,7 @@ const migratorConfig = {
 // Depending on your tool needs, specify extra paths
 
 const resolverConfig = {
-  alternatePaths: fromPath(wrench, ['src/_shared']),
+  alternatePaths: fromPath(wrench, ['src']),
   packageEntries: packages,
   packages: Object.keys(packages),
   extensions: [
