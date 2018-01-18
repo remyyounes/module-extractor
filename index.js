@@ -55,6 +55,8 @@ if (migratorConfig.debug) {
         './templates/webpack.config.js',
         './templates/webpack.dev.config.js',
         './templates/.babelrc',
+        './templates/scripts/componentUsage.js',
+        './templates/scripts/single-test.sh',
       ])).then(
         exportToDestination(
           './templates/',

@@ -11,6 +11,22 @@
     1. use this tool to remove unused dependencies (don't touch dev deps)
 1. `$ yarn add --dev babel-plugin-transform-runtime`
 1. `$ yarn install`
+1. Add the following scripts to your package.json
+	```json
+	"build:analyze": "npm run build:stats && webpack-bundle-analyzer stats.json build -s gzip",
+	"build:development": "NODE_ENV='development' webpack --progress --colors",
+	"build:stats": "NODE_ENV='production' webpack --profile --json > stats.json",
+	"build:production": "NODE_ENV='production' webpack --progress --colors -p",
+	"clean": "rm -fr node_modules",
+	"component-usage": "node -r babel-core/register scripts/componentUsage.js",
+	"coverage": "nyc --check-coverage --statements 24 --lines 24 --branches 17 --functions 12 -e .jsx -r html -r text --all --include 'src/**' npm run test",
+	"lint": "eslint ./src || exit 0",
+	"start": "NODE_ENV='development' webpack-dev-server --progress --colors --hot --inline --config webpack.dev.config.js",
+	"test": "NODE_PATH=./src NODE_ENV='test' mocha $(find . -type d -name '__tests__' -not -path '*/node_modules/*') --opts .mocha.opts",
+	"test:one": "scripts/single-test.sh",
+	"test:one:watch": "scripts/single-test.sh --watch",
+	"test:one:debug": "scripts/single-test.sh --debug"
+	```
 1. Fix Mounting / Connecting
     1. JS mount points no longer use promises from the JS side (see section)
     1. ERB mounting should use the Hydra helper on rails side (see section)
