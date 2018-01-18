@@ -2,7 +2,7 @@
 1. `$ rails generate hydra:client <CLIENT_NAME>`
 1. clone module-extractor
 1. modify config object in module-extractor/config.js
-1. pre extrator run, check your provider type (sage, wrap, loop)
+1. pre extractor run, check your provider type (sage, wrap, loop)
 1. run module-extractor (`$ node index`)
 
 # Manual hydra client fixes
