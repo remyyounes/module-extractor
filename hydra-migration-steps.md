@@ -8,6 +8,7 @@
 # Manual hydra client fixes
 1. `$ cd hydra_clients/<CLIENT_NAME>`
 1. `$ npm install -g depcheck && depcheck`
+    1. use this tool to remove unused dependencies (don't touch dev deps)
 1. `$ yarn add --dev babel-plugin-transform-runtime`
 1. `$ yarn install`
 1. Fix Mounting / Connecting
