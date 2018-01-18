@@ -2,11 +2,13 @@
 1. `$ rails generate hydra:client <CLIENT_NAME>`
 1. clone module-extractor
 1. modify config object in module-extractor/config.js
+1. pre extrator run, check your provider type (sage, wrap, loop)
 1. run module-extractor (`$ node index`)
 
 # Manual hydra client fixes
 1. `$ cd hydra_clients/<CLIENT_NAME>`
-1. `$ yarn add --dev neutrino-preset-mocha`
+1. `$ npm install -g depcheck && depcheck`
+1. `$ yarn add --dev babel-plugin-transform-runtime`
 1. `$ yarn install`
 1. Fix Mounting / Connecting
     1. JS mount points no longer use promises from the JS side (see section)
@@ -99,10 +101,11 @@ Here is the new syntax
   work. See [this github
   issue](https://github.com/jquense/react-widgets/issues/223#issuecomment-147394659) for more details.
   You can fix this issue by adding these lines to the component you are having
-  issues with: 
+  issues with:
   ```js
   import DateTimePicker from 'react-widgets/lib/DateTimePicker';
   import momentLocalizer from 'react-widgets/lib/localizers/moment';
 
   momentLocalizer(moment);
   ```
+  If you need to do this, pull it up to the root of your application

@@ -1,0 +1,17 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions"],
+        "uglify": true
+      }
+    }],
+    "react",
+    "stage-0"
+  ],
+  "plugins": [
+  	"transform-decorators-legacy",
+		"transform-runtime",
+		"add-module-exports"
+  ]
+}

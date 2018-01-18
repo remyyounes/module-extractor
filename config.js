@@ -1,12 +1,13 @@
 // Eventually move this to a configuration file
 // .module-extractor.rc
 const config = {
-  sourceDir: '/Users/remyy/Applications/ruby/procore/',
-  // sourceDir: '/Users/georgemichael/Code/Procore/procore',
+  // sourceDir: '/Users/remyy/Applications/ruby/procore/',
+  sourceDir: '/Users/georgemichael/Code/Procore/procore',
   destinationDir: 'budgetViewer',
   toolRoot: 'src/tools/budgetViewer',
   extraFiles: [
-    'src/_shared/decorators/sagaProvider/__tests__/MockComponent.jsx',
+    // NOTE: replace this line with the provider that you use!
+    // 'src/_shared/decorators/sagaProvider/__tests__/MockComponent.jsx',
   ],
   entryPoints: [
     'src/tools/budgetViewer/mounts/projectLevel/View.js',
