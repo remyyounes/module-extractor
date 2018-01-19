@@ -98,6 +98,7 @@ global.window = {
 };
 
 global.navigator = { userAgent: 'node.js' };
+global.I18n = { t(translationPath) { return translationPath } };
 
 chai.use(chaiImmutable);
 chai.config.truncateThreshold = 0;
