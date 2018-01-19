@@ -3,6 +3,9 @@
 1. clone module-extractor
 1. modify config object in module-extractor/config.js
 1. pre extractor run, check your provider type (sage, wrap, loop)
+1. do a test run:
+    1. uncomment the `debug: true` line in the `migratorConfig` object
+    1. scan the results to see if the paths are what you would expect
 1. run module-extractor (`$ node index`)
 
 # Manual hydra client fixes
