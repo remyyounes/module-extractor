@@ -36,11 +36,6 @@
     
 1. Ensure the tests run on Cirlce
 
-## Mocha Imports
- comment out / remove all of the mocha imports using this regex: `/import (.*) from 'mocha'/`
-
- We no longer need to import these files as the test configuration will do this for us.
-
 # Fixing the Mounting / Connecting
 Having to rewire the components through hydra is the only manual labor left, but
 luckily it isn't hard at all :)
