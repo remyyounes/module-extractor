@@ -33,9 +33,8 @@
 1. Fix Mounting / Connecting
     1. JS mount points no longer use promises from the JS side (see section)
     1. ERB mounting should use the Hydra helper on rails side (see section)
-1. Fix the Tests
-    1. remove mocha imports
-    1. fix any destructuring issues
+    
+1. Ensure the tests run on Cirlce
 
 ## Mocha Imports
  comment out / remove all of the mocha imports using this regex: `/import (.*) from 'mocha'/`
