@@ -51,7 +51,6 @@ if (migratorConfig.debug) {
         migratorConfig.entryPoints
       ).then(concat([
         './templates/src/index.js',
-        './templates/src/_shared/tests/testHelper.js',
         './templates/webpack.config.js',
         './templates/webpack.dev.config.js',
         './templates/.babelrc',
